@@ -21,11 +21,8 @@
 #-----------------------------------------------------#
 from miscnn.data_loading.interfaces import NIFTI_interface
 from miscnn import Data_IO
-
-
 from tqdm import tqdm
 import os
-
 import numpy as np
 import pandas as pd
 
@@ -63,7 +60,8 @@ for index in tqdm(sample_list):
     # Identify minimum and maximum volume intensity
     sample_data[index].append(sample.img_data.min())
     sample_data[index].append(sample.img_data.max())
-
+    # Store voxel spacing
+    sample_data[index].append(sample.details["spacing"])
     # Identify and store class distribution
     unique_data, unique_counts = np.unique(sample.seg_data, return_counts=True)
     class_freq = unique_counts / np.sum(unique_counts)
@@ -73,7 +71,8 @@ for index in tqdm(sample_list):
 # Transform collected data into a pandas dataframe
 df = pd.DataFrame.from_dict(sample_data, orient="index",
                             columns=["vol_shape", "vol_minimum",
-                                     "vol_maximum", "class_frequency"])
+                                     "vol_maximum", "voxel_spacing",
+                                     "class_frequency"])
 
 # Print out the dataframe to console
 with pd.option_context('display.max_rows', None, 'display.max_columns', None):

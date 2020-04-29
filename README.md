@@ -2,12 +2,16 @@
 
 Description blabla / Abstract
 
+This work does NOT claim clinical performance in any means and underly purely educational purposes.
+
 ## Reproducibility
 
-asd
-
+**Requirements:**
 - Ubuntu 18.04
 - Python 3.6
+- NVIDIA QUADRO RTX 6000 or a GPU with equivalent performance
+
+**Step-by-Step workflow:**
 
 Move working directory into repository.
 
@@ -19,13 +23,20 @@ cd covid19.MIScnn/
 Run blabla
 
 ```sh
-python scripts/download_data.py
+pip3 install -r requirements.txt
+```
+
+Run blabla
+
+```sh
+python3 scripts/download_data.py
 ```
 
 ## Materials
 
 Short description of data set / data set exploration  
-Source etc, credits
+Source etc, credits  
+Reference: https://zenodo.org/record/3757476#.XqhRp_lS-5D
 
 ## Methods
 
@@ -37,6 +48,9 @@ heavy data augmentation
 
 add plot  
 small data set (only 20 samples) -> resulting interpretation is heavily biased
+
+Limited data -> what is currently possible in medical image segmentation of COVID-19.  
+This work does NOT claim clinical performance in any means and underly purely educational purposes.
 
 ## Author
 

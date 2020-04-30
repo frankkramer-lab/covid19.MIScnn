@@ -1,4 +1,4 @@
 numpy==1.18.2
 pandas==0.25.3
-tensorflow-gpu==2.0.1
-miscnn_TF-2.0==0.32
+tensorflow-gpu==1.14.0
+miscnn-TF-1.14==0.32

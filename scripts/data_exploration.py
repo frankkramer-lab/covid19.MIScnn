@@ -91,6 +91,10 @@ for i, a in enumerate(["X", "Y", "Z"]):
 ## z axis than the other radiopaedia samples.
 ## Overall, the aim to identify suited resampling coordinates will be tricky.
 ##
+## When looking on the voxel spacings from the affinity matrix of the CTs,
+## we see that the x,y spacings or quite similiar whereas the z axis reveal
+## large differences. Resampling to a common voxel spacing is mandatory.
+##
 ## We see that the radiopaedia ct volumes have already preprocessed
 ## In the description of the data set, it is documentated that they
 ## used a clipping to the lung window [-1250, 250] and normalized these values

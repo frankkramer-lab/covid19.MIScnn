@@ -25,24 +25,6 @@ from miscnn.processing.subfunctions import Normalization, Clipping, Resampling
 from miscnn.processing.subfunctions.abstract_subfunction import Abstract_Subfunction
 
 #-----------------------------------------------------#
-#           Custom Normalization Subfunction          #
-#-----------------------------------------------------#
-class Normalization_Grayscale(Abstract_Subfunction):
-    def __init__(self):
-        pass
-
-    def preprocessing(self, sample, training=True):
-        # Access image
-        image = sample.img_data
-        # Perform normalization
-        image_normalized = (image - 101) / 76.9
-        # Update the sample with the normalized image
-        sample.img_data = image_normalized
-
-    def postprocessing(self, prediction):
-        return prediction
-
-#-----------------------------------------------------#
 #             Running the MIScnn Pipeline             #
 #-----------------------------------------------------#
 # Initialize Data IO Interface for NIfTI data
@@ -64,24 +46,20 @@ data_aug = Data_Augmentation(cycles=2, scaling=True, rotations=True,
 
 # Create a clipping Subfunction to the lung window of CTs (-1250 and 250)
 sf_clipping = Clipping(min=-1250, max=250)
-# Create a pixel value normalization Subfunction to scale 0-1
-sf_normalize = Normalization(z_score=False)
-# Create a resampling Subfunction to voxel spacing 3.22 x 1.62 x 1.62
-sf_resample = Resampling((1.62, 1.62, 3.22))
+# Create a pixel value normalization Subfunction to scale between 0-255
+sf_normalize = Normalization(mode="grayscale")
+# Create a resampling Subfunction to voxel spacing 2.56 x 2.56 x 1.92
+sf_resample = Resampling((2.56, 2.56, 1.92))
 
 # Assemble Subfunction classes into a list
-sf = [sf_clipping, sf_normalize]
-
-#sf = [Resampling((9,9,9)), Padding((32,32,32), shape_must_be_divisible_by=16)]
+sf = [sf_clipping, sf_normalize, sf_resample]
 
 # Create and configure the Preprocessor class
 pp = Preprocessor(data_io, data_aug=None, batch_size=1, subfunctions=sf,
                   prepare_subfunctions=True, prepare_batches=False,
-                  analysis="fullimage", patch_shape=(80, 160, 160))
+                  analysis="fullimage", patch_shape=(160, 160, 80))
 # Adjust the patch overlap for predictions
 pp.patchwise_overlap = (40, 80, 80)
-
-
 
 # Initialize Keras Data Generator for generating batches
 from miscnn.neural_network.data_generator import DataGenerator
@@ -90,8 +68,6 @@ dataGen = DataGenerator(sample_list, pp, training=True, validation=False,
 
 for img, seg in dataGen:
     print(img.shape)
-    print(img.min(), img.max())
-    #print(batch.shape)
 
 #
 #

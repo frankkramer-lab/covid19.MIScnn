@@ -48,22 +48,22 @@ data_aug = Data_Augmentation(cycles=2, scaling=True, rotations=True,
 sf_clipping = Clipping(min=-1250, max=250)
 # Create a pixel value normalization Subfunction to scale between 0-255
 sf_normalize = Normalization(mode="grayscale")
-# Create a resampling Subfunction to voxel spacing 2.56 x 2.56 x 1.92
-sf_resample = Resampling((2.56, 2.56, 1.92))
+# Create a resampling Subfunction to voxel spacing 1.58 x 1.58 x 2.70
+sf_resample = Resampling((1.58, 1.58, 2.70))
 
 # Assemble Subfunction classes into a list
 sf = [sf_clipping, sf_normalize, sf_resample]
 
 # Create and configure the Preprocessor class
-pp = Preprocessor(data_io, data_aug=None, batch_size=1, subfunctions=sf,
+pp = Preprocessor(data_io, data_aug=data_aug, batch_size=2, subfunctions=sf,
                   prepare_subfunctions=True, prepare_batches=False,
-                  analysis="fullimage", patch_shape=(160, 160, 80))
+                  analysis="patchwise-crop", patch_shape=(160, 160, 80))
 # Adjust the patch overlap for predictions
-pp.patchwise_overlap = (40, 80, 80)
+pp.patchwise_overlap = (80, 80, 40)
 
 # Initialize Keras Data Generator for generating batches
 from miscnn.neural_network.data_generator import DataGenerator
-dataGen = DataGenerator(sample_list, pp, training=True, validation=False,
+dataGen = DataGenerator(sample_list[0:2], pp, training=True, validation=False,
                         shuffle=False)
 
 for img, seg in dataGen:

@@ -26,6 +26,7 @@ from miscnn.processing.subfunctions.abstract_subfunction import Abstract_Subfunc
 from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
                                           dice_crossentropy, tversky_loss
 from miscnn.evaluation.cross_validation import cross_validation
+from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 #-----------------------------------------------------#
 #             Running the MIScnn Pipeline             #
@@ -70,13 +71,12 @@ model = Neural_Network(preprocessor=pp, loss=tversky_crossentropy,
                        batch_queue_size=3, workers=3, learninig_rate=0.001)
 
 # Define Callbacks
-from tensorflow.keras.callbacks import ReduceLROnPlateau
 cb_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=20,
                           verbose=1, mode='min', min_delta=0.0001, cooldown=1,
                           min_lr=0.00001)
 
 # Run 5-fold cross-validation
-cross_validation(validation_samples, model, k_fold=5, epochs=500,
+cross_validation(sample_list, model, k_fold=5, epochs=500,
                  iterations=150, evaluation_path="evaluation",
                  draw_figures=True, callbacks=[cb_lr],
                  run_detailed_evaluation=True, save_models=True)

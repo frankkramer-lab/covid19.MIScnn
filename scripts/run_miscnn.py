@@ -22,11 +22,11 @@
 from miscnn.data_loading.interfaces import NIFTI_interface
 from miscnn import Data_IO, Preprocessor, Data_Augmentation, Neural_Network
 from miscnn.processing.subfunctions import Normalization, Clipping, Resampling
-from miscnn.processing.subfunctions.abstract_subfunction import Abstract_Subfunction
+from miscnn.neural_network.architecture.unet.standard import Architecture
 from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
                                           dice_crossentropy, tversky_loss
 from miscnn.evaluation.cross_validation import cross_validation
-from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard
 
 #-----------------------------------------------------#
 #             Running the MIScnn Pipeline             #
@@ -65,8 +65,13 @@ pp = Preprocessor(data_io, data_aug=data_aug, batch_size=2, subfunctions=sf,
 # Adjust the patch overlap for predictions
 pp.patchwise_overlap = (80, 80, 40)
 
+# Initialize the Architecture
+unet_standard = Architecture(depth=4, activation='softmax',
+                             batch_normalization=True)
+
 # Create the Neural Network model
-model = Neural_Network(preprocessor=pp, loss=tversky_crossentropy,
+model = Neural_Network(preprocessor=pp, architecture=unet_standard,
+                       loss=tversky_crossentropy,
                        metrics=[tversky_loss, dice_soft, dice_crossentropy],
                        batch_queue_size=3, workers=3, learninig_rate=0.001)
 

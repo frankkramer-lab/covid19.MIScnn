@@ -71,7 +71,7 @@ model = Neural_Network(preprocessor=pp, loss=tversky_crossentropy,
                        batch_queue_size=3, workers=3, learninig_rate=0.001)
 
 # Define Callbacks
-cb_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=20,
+cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=20,
                           verbose=1, mode='min', min_delta=0.0001, cooldown=1,
                           min_lr=0.00001)
 

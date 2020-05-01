@@ -26,7 +26,7 @@ from miscnn.neural_network.architecture.unet.standard import Architecture
 from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
                                           dice_crossentropy, tversky_loss
 from miscnn.evaluation.cross_validation import cross_validation
-from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard
+from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, CSVLogger
 
 #-----------------------------------------------------#
 #             Running the MIScnn Pipeline             #
@@ -81,9 +81,10 @@ cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=20,
                           min_lr=0.00001)
 cb_tb = TensorBoard(log_dir="tensorboard", histogram_freq=0,
                     write_graph=True, write_images=True)
+cb_cl = CSVLogger("logs.csv", separator=',', append=True)
 
 # Run 5-fold cross-validation
 cross_validation(sample_list, model, k_fold=5, epochs=500,
                  iterations=150, evaluation_path="evaluation",
-                 draw_figures=True, callbacks=[cb_lr, cb_tb],
+                 draw_figures=True, callbacks=[cb_lr, cb_tb, cb_cl],
                  run_detailed_evaluation=True, save_models=True)

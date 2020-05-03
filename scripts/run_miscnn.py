@@ -76,7 +76,7 @@ model = Neural_Network(preprocessor=pp, architecture=unet_standard,
                        batch_queue_size=3, workers=3, learninig_rate=0.001)
 
 # Define Callbacks
-cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=20,
+cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=10,
                           verbose=1, mode='min', min_delta=0.0001, cooldown=1,
                           min_lr=0.00001)
 cb_tb = TensorBoard(log_dir="tensorboard", histogram_freq=0,
@@ -84,7 +84,7 @@ cb_tb = TensorBoard(log_dir="tensorboard", histogram_freq=0,
 cb_cl = CSVLogger("logs.csv", separator=',', append=True)
 
 # Run 5-fold cross-validation
-cross_validation(sample_list, model, k_fold=5, epochs=500,
+cross_validation(sample_list, model, k_fold=5, epochs=300,
                  iterations=150, evaluation_path="evaluation",
                  draw_figures=True, callbacks=[cb_lr, cb_tb, cb_cl],
                  run_detailed_evaluation=True, save_models=True)

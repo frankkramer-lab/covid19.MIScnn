@@ -84,6 +84,12 @@ for i, a in enumerate(["X", "Y", "Z"]):
     print(a + "-Axes Mean:", np.mean(shape_list[:,i]))
     print(a + "-Axes Median:", np.median(shape_list[:,i]))
 
+# Calculate average class frequency
+df_classes = pd.DataFrame(df["class_frequency"].tolist(),
+                          columns=["background", "lung_L",
+                                   "lung_R", "infection"])
+print(df_classes.mean(axis=0))
+
 ## The resolution of the volumes are fixed for the x,y axes to 512x512 for the
 ## "coronacases" data and 630x630 for the "radiopaedia" volumes.
 ## Strangely, a single sample "radiopaedia_14_85914_0" has only 630x401 for x,y.

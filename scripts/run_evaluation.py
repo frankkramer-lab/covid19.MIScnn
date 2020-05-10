@@ -22,7 +22,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import pandas as pd
 import os
+from tqdm import tqdm
 from miscnn.data_loading.interfaces import NIFTI_interface
 from miscnn import Data_IO
 
@@ -35,22 +37,26 @@ def visualize_evaluation(case_id, vol, truth, pred, eva_path):
     truth = np.squeeze(truth, axis=-1)
     pred = np.squeeze(pred, axis=-1)
     # Color volumes according to truth and pred segmentation
+    vol_raw = overlay_segmentation(vol, np.zeros(vol.shape))
     vol_truth = overlay_segmentation(vol, truth)
     vol_pred = overlay_segmentation(vol, pred)
     # Create a figure and two axes objects from matplot
-    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
     # Initialize the two subplots (axes) with an empty image
     data = np.zeros(vol.shape[0:2])
-    ax1.set_title("Ground Truth")
-    ax2.set_title("Prediction")
+    ax1.set_title("CT Scan")
+    ax2.set_title("Ground Truth")
+    ax3.set_title("Prediction")
     img1 = ax1.imshow(data)
     img2 = ax2.imshow(data)
+    img3 = ax3.imshow(data)
     # Update function for both images to show the slice for the current frame
     def update(i):
         plt.suptitle("Case ID: " + str(case_id) + " - " + "Slice: " + str(i))
-        img1.set_data(vol_truth[:,:,i])
-        img2.set_data(vol_pred[:,:,i])
-        return [img1, img2]
+        img1.set_data(vol_raw[:,:,i])
+        img2.set_data(vol_truth[:,:,i])
+        img3.set_data(vol_pred[:,:,i])
+        return [img1, img2, img3]
     # Compute the animation (gif)
     ani = animation.FuncAnimation(fig, update, frames=truth.shape[2],
                                   interval=10, repeat_delay=0, blit=False)
@@ -157,8 +163,16 @@ data_io = Data_IO(interface, input_path="data", output_path="predictions")
 sample_list = data_io.get_indiceslist()
 sample_list.sort()
 
+# Initialize dataframe
+cols = ["index", "score", "background", "lung_L", "lung_R", "infection"]
+df = pd.DataFrame(data=[], dtype=np.float64, columns=cols)
+
 # Iterate over each sample
-for index in sample_list:
+for index in tqdm(sample_list):
+    # Debugging
+    if index not in ["coronacases_001", "coronacases_002", "coronacases_003", "coronacases_004"]:
+        continue
+
     # Load a sample including its image, ground truth and prediction
     sample = data_io.sample_loader(index, load_seg=True, load_pred=True)
     # Access image, ground truth and prediction data
@@ -167,12 +181,15 @@ for index in sample_list:
     pred = sample.pred_data
     # Compute diverse Scores
     dsc = calc_DSC(truth, pred, classes=4)
-    print(dsc)
+    df = df.append(pd.Series([index, "DSC"] + dsc, index=cols),
+                   ignore_index=True)
     sens = calc_Sensitivity(truth, pred, classes=4)
-    print(sens)
-    specs = calc_Specificity(truth, pred, classes=4)
-    print(specs)
+    df = df.append(pd.Series([index, "Sens"] + sens, index=cols),
+                   ignore_index=True)
+    spec = calc_Specificity(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
+                   ignore_index=True)
     # Compute Visualization
-    #visualize_evaluation(index, image, truth, pred, "evaluation/visualization")
+    # visualize_evaluation(index, image, truth, pred, "evaluation/visualization")
 
-    break
+print(df)

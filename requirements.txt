@@ -2,3 +2,4 @@ numpy==1.18.2
 pandas==0.25.3
 tensorflow==2.2.0
 miscnn==0.33
+tqdm==4.35.0

@@ -148,6 +148,8 @@ def calc_Specificity(truth, pred, classes):
 #-----------------------------------------------------#
 #                      Plotting                       #
 #-----------------------------------------------------#
+def plot_fitting(fold, path_log):
+    pass
 
 #-----------------------------------------------------#
 #                    Run Evaluation                   #
@@ -167,29 +169,51 @@ sample_list.sort()
 cols = ["index", "score", "background", "lung_L", "lung_R", "infection"]
 df = pd.DataFrame(data=[], dtype=np.float64, columns=cols)
 
-# Iterate over each sample
-for index in tqdm(sample_list):
-    # Debugging
-    if index not in ["coronacases_001", "coronacases_002", "coronacases_003", "coronacases_004"]:
-        continue
+# # Iterate over each sample
+# for index in tqdm(sample_list):
+#     # Debugging
+#     if index not in ["coronacases_001", "coronacases_002", "coronacases_003", "coronacases_004"]:
+#         continue
+#
+#     # Load a sample including its image, ground truth and prediction
+#     sample = data_io.sample_loader(index, load_seg=True, load_pred=True)
+#     # Access image, ground truth and prediction data
+#     image = sample.img_data
+#     truth = sample.seg_data
+#     pred = sample.pred_data
+#     # Compute diverse Scores
+#     dsc = calc_DSC(truth, pred, classes=4)
+#     df = df.append(pd.Series([index, "DSC"] + dsc, index=cols),
+#                    ignore_index=True)
+#     sens = calc_Sensitivity(truth, pred, classes=4)
+#     df = df.append(pd.Series([index, "Sens"] + sens, index=cols),
+#                    ignore_index=True)
+#     spec = calc_Specificity(truth, pred, classes=4)
+#     df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
+#                    ignore_index=True)
+#     # Compute Visualization
+#     # visualize_evaluation(index, image, truth, pred, "evaluation/visualization")
+#
+# # Output complete dataframe
+# print(df)
 
-    # Load a sample including its image, ground truth and prediction
-    sample = data_io.sample_loader(index, load_seg=True, load_pred=True)
-    # Access image, ground truth and prediction data
-    image = sample.img_data
-    truth = sample.seg_data
-    pred = sample.pred_data
-    # Compute diverse Scores
-    dsc = calc_DSC(truth, pred, classes=4)
-    df = df.append(pd.Series([index, "DSC"] + dsc, index=cols),
-                   ignore_index=True)
-    sens = calc_Sensitivity(truth, pred, classes=4)
-    df = df.append(pd.Series([index, "Sens"] + sens, index=cols),
-                   ignore_index=True)
-    spec = calc_Specificity(truth, pred, classes=4)
-    df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
-                   ignore_index=True)
-    # Compute Visualization
-    # visualize_evaluation(index, image, truth, pred, "evaluation/visualization")
-
-print(df)
+# Compute per-fold scores
+for fold in os.listdir("evaluation"):
+    # Skip all files in evaluation which are not cross-validation dirs
+    if not fold.startswith("fold_") : continue
+    # Identify validation samples of this fold
+    path_detval= os.path.join("evaluation", fold, "detailed_validation.tsv")
+    detval = pd.read_csv(path_detval, sep="\t", header=0)
+    val_list = list(detval["sample_id"])
+    # Obtain metrics for validation list
+    df_val = df.loc[df["index"].isin(val_list)]
+    # Compute average metrics for validation list
+    df_val = df.groupby(by="score").mean()
+    # Combine lung left and lung right class by mean
+    df_val["lungs"] = df_val[["lung_L", "lung_R"]].mean(axis=1)
+    df_val.drop(["lung_L", "lung_R"], axis=1, inplace=True)
+    # Print out averaged evaluation metrics for the current fold
+    print("Current Fold:", fold)
+    print(df_val)
+    # Run plotting of fitting process
+    plot_fitting(fold, os.path.join("evaluation", fold, "logs.csv"))

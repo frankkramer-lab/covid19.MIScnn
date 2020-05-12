@@ -4,3 +4,4 @@ tensorflow==2.2.0
 miscnn==0.33
 tqdm==4.35.0
 plotnine==0.6.0
+scikit-misc==0.1.2

@@ -27,6 +27,7 @@ import os
 from tqdm import tqdm
 from miscnn.data_loading.interfaces import NIFTI_interface
 from miscnn import Data_IO
+from plotnine import *
 
 #-----------------------------------------------------#
 #                    Visualization                    #
@@ -66,7 +67,7 @@ def visualize_evaluation(case_id, vol, truth, pred, eva_path):
     file_name = "visualization." + str(case_id).zfill(5) + ".gif"
     out_path = os.path.join(eva_path, file_name)
     # Save the animation (gif)
-    ani.save(out_path, writer='imagemagick', fps=20)
+    ani.save(out_path, writer='imagemagick', fps=20, dpi=150)
     # Close the matplot
     plt.close()
 
@@ -148,8 +149,30 @@ def calc_Specificity(truth, pred, classes):
 #-----------------------------------------------------#
 #                      Plotting                       #
 #-----------------------------------------------------#
-def plot_fitting(fold, path_log):
-    pass
+def plot_fitting(df_log):
+    # Melt Data Set
+    df_fitting = df_log.melt(id_vars=["epoch"],
+                             value_vars=["loss", "val_loss"],
+                             var_name="Dataset",
+                             value_name="score")
+    # Plot
+    fig = (ggplot(df_fitting, aes("epoch", "score", color="factor(Dataset)"))
+                  + geom_smooth(method="gpr", size=2)
+                  + ggtitle("Fitting Curve during Training")
+                  + xlab("Epoch")
+                  + ylab("Loss Function")
+                  + scale_colour_discrete(name="Dataset",
+                                          labels=["Training", "Validation"])
+                  + theme_bw(base_size=28))
+    # # Plot
+    # fig = (ggplot(df_fitting, aes("epoch", "score", color="factor(Dataset)"))
+    #               + geom_line()
+    #               + ggtitle("Fitting Curve during Training")
+    #               + xlab("Epoch")
+    #               + ylab("Loss Function")
+    #               + theme_bw())
+    fig.save(filename="fitting_curve.png", path="evaluation",
+             width=12, height=10, dpi=300)
 
 #-----------------------------------------------------#
 #                    Run Evaluation                   #
@@ -169,33 +192,39 @@ sample_list.sort()
 cols = ["index", "score", "background", "lung_L", "lung_R", "infection"]
 df = pd.DataFrame(data=[], dtype=np.float64, columns=cols)
 
-# # Iterate over each sample
-# for index in tqdm(sample_list):
-#     # Debugging
-#     if index not in ["coronacases_001", "coronacases_002", "coronacases_003", "coronacases_004"]:
-#         continue
-#
-#     # Load a sample including its image, ground truth and prediction
-#     sample = data_io.sample_loader(index, load_seg=True, load_pred=True)
-#     # Access image, ground truth and prediction data
-#     image = sample.img_data
-#     truth = sample.seg_data
-#     pred = sample.pred_data
-#     # Compute diverse Scores
-#     dsc = calc_DSC(truth, pred, classes=4)
-#     df = df.append(pd.Series([index, "DSC"] + dsc, index=cols),
-#                    ignore_index=True)
-#     sens = calc_Sensitivity(truth, pred, classes=4)
-#     df = df.append(pd.Series([index, "Sens"] + sens, index=cols),
-#                    ignore_index=True)
-#     spec = calc_Specificity(truth, pred, classes=4)
-#     df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
-#                    ignore_index=True)
-#     # Compute Visualization
-#     # visualize_evaluation(index, image, truth, pred, "evaluation/visualization")
-#
-# # Output complete dataframe
-# print(df)
+# Iterate over each sample
+for index in tqdm(sample_list):
+    # Debugging
+    if index not in ["coronacases_001", "coronacases_002", "coronacases_003", "coronacases_004"]:
+        continue
+
+    # Load a sample including its image, ground truth and prediction
+    sample = data_io.sample_loader(index, load_seg=True, load_pred=True)
+    # Access image, ground truth and prediction data
+    image = sample.img_data
+    truth = sample.seg_data
+    pred = sample.pred_data
+    # Compute diverse Scores
+    dsc = calc_DSC(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "DSC"] + dsc, index=cols),
+                   ignore_index=True)
+    sens = calc_Sensitivity(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "Sens"] + sens, index=cols),
+                   ignore_index=True)
+    spec = calc_Specificity(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
+                   ignore_index=True)
+    # Compute Visualization
+    visualize_evaluation(index, image, truth, pred, "evaluation/visualization")
+
+# Output complete dataframe
+print(df)
+
+# Initialize fitting logging dataframe
+cols = ["epoch", "dice_crossentropy", "dice_soft", "loss", "lr", "tversky_loss",
+        "val_dice_crossentropy", "val_dice_soft", "val_loss","val_tversky_loss",
+        "fold"]
+df_log = pd.DataFrame(data=[], dtype=np.float64, columns=cols)
 
 # Compute per-fold scores
 for fold in os.listdir("evaluation"):
@@ -215,5 +244,12 @@ for fold in os.listdir("evaluation"):
     # Print out averaged evaluation metrics for the current fold
     print("Current Fold:", fold)
     print(df_val)
-    # Run plotting of fitting process
-    plot_fitting(fold, os.path.join("evaluation", fold, "logs.csv"))
+    # Load logging data for fitting plot
+    path_log = os.path.join("evaluation", fold, "logs.csv")
+    df_logfold = pd.read_csv(path_log, header=0)
+    df_logfold["fold"] = fold
+    # Add logging data to global fitting log dataframe
+    df_log = df_log.append(df_logfold, ignore_index=True)
+
+# Run plotting of fitting process
+plot_fitting(df_log)

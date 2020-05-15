@@ -26,7 +26,8 @@ from miscnn.neural_network.architecture.unet.standard import Architecture
 from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
                                           dice_crossentropy, tversky_loss
 from miscnn.evaluation.cross_validation import cross_validation
-from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, CSVLogger
+from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, \
+                                       EarlyStopping, CSVLogger
 
 #-----------------------------------------------------#
 #             Running the MIScnn Pipeline             #
@@ -66,7 +67,7 @@ pp = Preprocessor(data_io, data_aug=data_aug, batch_size=2, subfunctions=sf,
 pp.patchwise_overlap = (80, 80, 40)
 
 # Initialize the Architecture
-unet_standard = Architecture(depth=4, activation='softmax',
+unet_standard = Architecture(depth=4, activation="softmax",
                              batch_normalization=True)
 
 # Create the Neural Network model
@@ -79,12 +80,13 @@ model = Neural_Network(preprocessor=pp, architecture=unet_standard,
 cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=10,
                           verbose=1, mode='min', min_delta=0.0001, cooldown=1,
                           min_lr=0.00001)
+cb_es = EarlyStopping(monitor="loss", patience=50)
 cb_tb = TensorBoard(log_dir="tensorboard", histogram_freq=0,
                     write_graph=True, write_images=True)
 cb_cl = CSVLogger("logs.csv", separator=',', append=True)
 
 # Run 5-fold cross-validation
-cross_validation(sample_list, model, k_fold=5, epochs=300,
+cross_validation(sample_list, model, k_fold=5, epochs=1000,
                  iterations=150, evaluation_path="evaluation",
-                 draw_figures=True, callbacks=[cb_lr, cb_tb, cb_cl],
+                 draw_figures=True, callbacks=[cb_lr, cb_es, cb_tb, cb_cl],
                  run_detailed_evaluation=True, save_models=True)

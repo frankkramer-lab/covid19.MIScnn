@@ -62,9 +62,11 @@ sf_clipping = Clipping(min=-1250, max=250)
 sf_normalize = Normalization(mode="grayscale")
 # Create a resampling Subfunction to voxel spacing 1.58 x 1.58 x 2.70
 sf_resample = Resampling((1.58, 1.58, 2.70))
+# Create a pixel value normalization Subfunction for z-score scaling
+sf_zscore = Normalization(mode="z-score")
 
 # Assemble Subfunction classes into a list
-sf = [sf_clipping, sf_normalize, sf_resample]
+sf = [sf_clipping, sf_normalize, sf_resample, sf_zscore]
 
 # Create and configure the Preprocessor class
 pp = Preprocessor(data_io, data_aug=data_aug, batch_size=2, subfunctions=sf,

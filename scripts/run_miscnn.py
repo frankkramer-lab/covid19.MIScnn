@@ -19,6 +19,7 @@
 #-----------------------------------------------------#
 #                   Library imports                   #
 #-----------------------------------------------------#
+import tensorflow as tf
 from miscnn.data_loading.interfaces import NIFTI_interface
 from miscnn import Data_IO, Preprocessor, Data_Augmentation, Neural_Network
 from miscnn.processing.subfunctions import Normalization, Clipping, Resampling
@@ -28,6 +29,12 @@ from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
 from miscnn.evaluation.cross_validation import cross_validation
 from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, \
                                        EarlyStopping, CSVLogger
+
+#-----------------------------------------------------#
+#      Tensorflow Configuration for GPU Cluster       #
+#-----------------------------------------------------#
+physical_devices = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 #-----------------------------------------------------#
 #             Running the MIScnn Pipeline             #

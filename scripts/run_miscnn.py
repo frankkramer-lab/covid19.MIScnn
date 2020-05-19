@@ -99,10 +99,10 @@ model = Neural_Network(preprocessor=pp, architecture=unet_standard,
                        batch_queue_size=3, workers=3, learninig_rate=0.001)
 
 # Define Callbacks
-cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=10,
+cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=15,
                           verbose=1, mode='min', min_delta=0.0001, cooldown=1,
                           min_lr=0.00001)
-cb_es = EarlyStopping(monitor="loss", patience=75)
+cb_es = EarlyStopping(monitor="loss", patience=100)
 cb_tb = TensorBoard(log_dir="tensorboard", histogram_freq=0,
                     write_graph=True, write_images=True)
 cb_cl = CSVLogger("logs.csv", separator=',', append=True)

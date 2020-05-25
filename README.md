@@ -57,7 +57,7 @@ Reference: https://zenodo.org/record/3757476#.XqhRp_lS-5D
 
 ## Methods
 
-The implemented medical image segmentation pipeline can be summarized in the following core steps and is illustrated in figure 2:
+The implemented medical image segmentation pipeline can be summarized in the following core steps:
 - Dataset: 20x COVID-19 CT volumes
 - Limited dataset → Utilization as variation database
 - Heavy preprocessing methods
@@ -116,7 +116,7 @@ Bavaria, Germany
 ## How to cite / More information
 
 Dominik Müller, Iñaki Soto Rey and Frank Kramer. (2020)  
-COVID-19 Segmentation on 3D CT Volumes via MIScnn using the U-Net Architecture.  
+Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net.  
 arXiv e-print: Coming soon
 
 ```

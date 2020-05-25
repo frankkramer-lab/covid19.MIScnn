@@ -28,7 +28,7 @@ from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
                                           dice_crossentropy, tversky_loss
 from miscnn.evaluation.cross_validation import cross_validation
 from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, \
-                                       EarlyStopping, CSVLogger, ModelCheckpoint
+                                       EarlyStopping, CSVLogger
 from miscnn.evaluation.cross_validation import run_fold, load_csv2fold
 import argparse
 import os
@@ -103,33 +103,27 @@ cb_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=15,
                           verbose=1, mode='min', min_delta=0.0001, cooldown=1,
                           min_lr=0.00001)
 cb_es = EarlyStopping(monitor="loss", patience=100)
-cb_tb = TensorBoard(log_dir="tensorboard", histogram_freq=0,
-                    write_graph=True, write_images=True)
-cb_cl = CSVLogger("logs.csv", separator=',', append=True)
-cb_mc = ModelCheckpoint(os.path.join(fold_subdir, "model.best.hdf5"),
-                        monitor="loss", verbose=1,
-                        save_best_only=True, mode="min")
+cb_tb = TensorBoard(log_dir=os.path.join(fold_subdir, "tensorboard"),
+                    histogram_freq=0, write_graph=True, write_images=True)
+cb_cl = CSVLogger(os.path.join(fold_subdir, "logs.csv"), separator=',',
+                  append=True)
 
 #-----------------------------------------------------#
 #          Run Pipeline for provided CV Fold          #
 #-----------------------------------------------------#
 # Run pipeline for cross-validation fold
 run_fold(fold, model, epochs=1000, iterations=150, evaluation_path="evaluation",
-         draw_figures=True, callbacks=[cb_lr, cb_es, cb_tb, cb_cl, cb_mc],
+         draw_figures=True, callbacks=[cb_lr, cb_es, cb_tb, cb_cl],
          save_models=False)
 
-# Dump latest model to disk
-model.dump(os.path.join(fold_subdir, "model.latest.hdf5"))
+# Dump model to disk for reproducibility
+model.dump(os.path.join(fold_subdir, "model.hdf5"))
 
 #-----------------------------------------------------#
 #           Inference for provided CV Fold            #
 #-----------------------------------------------------#
-# Load best model weights during fitting
-model.load(os.path.join(fold_subdir, "model.best.hdf5"))
-
 # Obtain training and validation data set
 training, validation = load_csv2fold(os.path.join(fold_subdir,
                                                   "sample_list.csv"))
-
 # Compute predictions
 model.predict(validation, direct_output=False)

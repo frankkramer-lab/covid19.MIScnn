@@ -73,6 +73,8 @@ def visualize_evaluation(case_id, vol, truth, pred, eva_path):
 
 # Based on: https://github.com/neheller/kits19/blob/master/starter_code/visualize.py
 def overlay_segmentation(vol, seg):
+    # Clip intensities to -1250 and +250
+    vol = np.clip(vol, -1250, 250)
     # Scale volume to greyscale range
     vol_scaled = (vol - np.min(vol)) / (np.max(vol) - np.min(vol))
     vol_greyscale = np.around(vol_scaled * 255, decimals=0).astype(np.uint8)
@@ -161,6 +163,7 @@ def plot_fitting(df_log):
                   + ggtitle("Fitting Curve during Training")
                   + xlab("Epoch")
                   + ylab("Loss Function")
+                  + scale_y_continuous(limits=[0, 3])
                   + scale_colour_discrete(name="Dataset",
                                           labels=["Training", "Validation"])
                   + theme_bw(base_size=28))
@@ -194,10 +197,6 @@ df = pd.DataFrame(data=[], dtype=np.float64, columns=cols)
 
 # Iterate over each sample
 for index in tqdm(sample_list):
-    # Debugging
-    if index not in ["coronacases_001", "coronacases_002", "coronacases_003", "coronacases_004"]:
-        continue
-
     # Load a sample including its image, ground truth and prediction
     sample = data_io.sample_loader(index, load_seg=True, load_pred=True)
     # Access image, ground truth and prediction data
@@ -219,37 +218,53 @@ for index in tqdm(sample_list):
 
 # Output complete dataframe
 print(df)
+# Store complete dataframe to disk
+path_res_detailed = os.path.join("evaluation", "cv_results.detailed.csv")
+df.to_csv(path_res_detailed, index=False)
 
 # Initialize fitting logging dataframe
 cols = ["epoch", "dice_crossentropy", "dice_soft", "loss", "lr", "tversky_loss",
         "val_dice_crossentropy", "val_dice_soft", "val_loss","val_tversky_loss",
         "fold"]
 df_log = pd.DataFrame(data=[], dtype=np.float64, columns=cols)
+cols_val = ["score", "background", "infection", "lungs", "fold"]
+df_global = pd.DataFrame(data=[], dtype=np.float64, columns=cols_val)
 
 # Compute per-fold scores
 for fold in os.listdir("evaluation"):
     # Skip all files in evaluation which are not cross-validation dirs
     if not fold.startswith("fold_") : continue
     # Identify validation samples of this fold
-    path_detval= os.path.join("evaluation", fold, "detailed_validation.tsv")
-    detval = pd.read_csv(path_detval, sep="\t", header=0)
-    val_list = list(detval["sample_id"])
+    path_detval= os.path.join("evaluation", fold, "sample_list.csv")
+    detval = pd.read_csv(path_detval, sep=" ", header=None)
+    detval = detval.iloc[1].dropna()
+    val_list = detval.values.tolist()[1:]
     # Obtain metrics for validation list
     df_val = df.loc[df["index"].isin(val_list)]
     # Compute average metrics for validation list
-    df_val = df.groupby(by="score").mean()
+    df_val = df_val.groupby(by="score").median()
     # Combine lung left and lung right class by mean
     df_val["lungs"] = df_val[["lung_L", "lung_R"]].mean(axis=1)
     df_val.drop(["lung_L", "lung_R"], axis=1, inplace=True)
     # Print out averaged evaluation metrics for the current fold
     print("Current Fold:", fold)
     print(df_val)
+    # Add df_val df to df_global
+    df_val["fold"] = fold
+    df_val = df_val.reset_index()
+    df_global = df_global.append(df_val, ignore_index=True)
     # Load logging data for fitting plot
-    path_log = os.path.join("evaluation", fold, "logs.csv")
-    df_logfold = pd.read_csv(path_log, header=0)
+    path_log = os.path.join("evaluation", fold, "history.tsv")
+    df_logfold = pd.read_csv(path_log, header=0, sep="\t")
     df_logfold["fold"] = fold
     # Add logging data to global fitting log dataframe
     df_log = df_log.append(df_logfold, ignore_index=True)
 
 # Run plotting of fitting process
 plot_fitting(df_log)
+
+# Output cross-validation results
+print(df_global)
+# Save cross-validation results to disk
+path_res_global = os.path.join("evaluation", "cv_results.final.csv")
+df_global.to_csv(path_res_global, index=False)

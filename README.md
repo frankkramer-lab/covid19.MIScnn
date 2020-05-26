@@ -16,7 +16,7 @@ Furthermore, we were able to outperform current state-of-the-art semantic segmen
 
 **Step-by-Step workflow:**
 
-Move working directory into repository.
+Download the code repository via git clone to your disk. Afterwards, install all required dependencies, download the dataset and setup the file structure.
 
 ```sh
 git clone https://github.com/muellerdo/covid19.MIScnn.git
@@ -26,13 +26,15 @@ pip3 install -r requirements.txt
 python3 scripts/download_data.py
 ```
 
-Run blabla
+Optionally, you can run the data exploration, which give some interesting information about the dataset.
 
 ```sh
 python3 scripts/data_exploration.py
 ```
 
-Run blabla
+For the training and inference process, you initialize the cross-validation folds by running the preprocessing. This setups a validation file structure and randomly samples the folds.
+
+The most important step is running the training & inference process for each fold. This can be done either sequential or parallized on multiple GPUs.
 
 ```sh
 python3 scripts/run_preprocessing.py
@@ -43,7 +45,7 @@ python3 scripts/run_miscnn.py --fold 3
 python3 scripts/run_miscnn.py --fold 4
 ```
 
-Run blabla
+Finally, the evaluation script computes all scores, visualizations and figures.
 
 ```sh
 python3 scripts/run_evaluation.py

@@ -5,6 +5,8 @@ Furthermore, we were able to outperform current state-of-the-art semantic segmen
 
 **This work does NOT claim clinical performance in any means and underlie purely educational purposes.**
 
+![segmentation](docs/pdVSgt.png)
+
 ## Reproducibility
 
 **Requirements:**
@@ -88,16 +90,13 @@ on randomly generated patches via extensive data
 augmentation and random cropping from a variant database,
 is highly efficient for limited imaging data.
 
-![fitting_curve](docs/fitting_curve.png)
+![fitting_and_boxplot](docs/fitting_and_boxplot.png)
 
 The inference revealed a strong segmentation performance for lungs, as well as, COVID-19 infected regions. Overall, the
-cross-validation models achieved a DSC of around 0.956 for lung and 0.761 for COVID-19 infection segmentation.
-
+cross-validation models achieved a DSC of around 0.956 for lung and 0.761 for COVID-19 infection segmentation.  
 Furthermore, the models achieved a sensitivity and
 specificity of 0.956 and 0.998 for lungs, as well as, 0.730
 and 0.999 for infection, respectively.
-
-![segmentation](docs/pdVSgt.png)
 
 Nevertheless, our medical image
 segmentation pipeline allowed fitting a model which is able

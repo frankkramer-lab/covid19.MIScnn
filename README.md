@@ -3,6 +3,9 @@
 In this paper, we proposed and evaluated an approach for automated segmentation of COVID-19 infected regions in CT volumes. Our method focused on on-the-fly generation of unique and random image patches for training by exploiting heavy preprocessing and extensive data augmentation. Thus, it is possible to handle limited dataset sizes which act as variant database. Instead of new and complex neural network architectures, we utilized the standard 3D U-Net. We proved that our medical image segmentation pipeline is able to successfully train accurate as well as robust models without overfitting on limited data.
 Furthermore, we were able to outperform current state-of-the-art semantic segmentation approaches for lungs and COVID-19 infection. Our work has great potential to be applied as a clinical decision support system for COVID-19 quantitative assessment and disease monitoring in the clinical environment. Nevertheless, further research is needed on COVID-19 semantic segmentation in clinical studies for evaluating clinical performance and robustness.
 
+The models, predictions, visualizations and evaluation (scores, figures) are available under the following link: https://doi.org/10.5281/zenodo.3902293   
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3902293.svg)](https://doi.org/10.5281/zenodo.3902293)
+
 **This work does NOT claim clinical performance in any means and underlie purely educational purposes.**
 
 ![segmentation](docs/pdVSgt.png)

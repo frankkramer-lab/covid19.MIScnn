@@ -1,10 +1,11 @@
 # Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3902293.svg)](https://doi.org/10.5281/zenodo.3902293)
+
 In this paper, we proposed and evaluated an approach for automated segmentation of COVID-19 infected regions in CT volumes. Our method focused on on-the-fly generation of unique and random image patches for training by exploiting heavy preprocessing and extensive data augmentation. Thus, it is possible to handle limited dataset sizes which act as variant database. Instead of new and complex neural network architectures, we utilized the standard 3D U-Net. We proved that our medical image segmentation pipeline is able to successfully train accurate as well as robust models without overfitting on limited data.
 Furthermore, we were able to outperform current state-of-the-art semantic segmentation approaches for lungs and COVID-19 infection. Our work has great potential to be applied as a clinical decision support system for COVID-19 quantitative assessment and disease monitoring in the clinical environment. Nevertheless, further research is needed on COVID-19 semantic segmentation in clinical studies for evaluating clinical performance and robustness.
 
-The models, predictions, visualizations and evaluation (scores, figures) are available under the following link: https://doi.org/10.5281/zenodo.3902293   
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3902293.svg)](https://doi.org/10.5281/zenodo.3902293)
+The models, predictions, visualizations and evaluation (scores, figures) are available under the following link: https://doi.org/10.5281/zenodo.3902293
 
 **This work does NOT claim clinical performance in any means and underlie purely educational purposes.**
 
@@ -117,12 +118,19 @@ Bavaria, Germany
 
 ## How to cite / More information
 
-Dominik Müller, Iñaki Soto Rey and Frank Kramer. (2020)  
+Dominik Müller, Iñaki Soto-Rey and Frank Kramer. (2020)   
 Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net.  
-arXiv e-print: Coming soon
+arXiv e-print: [https://arxiv.org/abs/2007.04774](https://arxiv.org/abs/2007.04774)
 
 ```
-Coming soon
+Article{covid19seg,
+  title={Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net},
+  author={Dominik Müller, Iñaki Soto-Rey and Frank Kramer},
+  year={2020},
+  eprint={2007.04774},
+  archivePrefix={arXiv},
+  primaryClass={eess.IV}
+}
 ```
 
 Thank you for citing our work.

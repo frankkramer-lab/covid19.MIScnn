@@ -1,4 +1,4 @@
-# Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net
+# Robust Chest CT Image Segmentation of COVID-19 Lung Infection based on limited data
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3902293.svg)](https://doi.org/10.5281/zenodo.3902293)
 

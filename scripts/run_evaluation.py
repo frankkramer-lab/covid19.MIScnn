@@ -148,6 +148,24 @@ def calc_Specificity(truth, pred, classes):
     # Return computed specificity scores
     return spec_scores
 
+def calc_Accuracy(truth, pred, classes):
+    acc_scores = []
+    # Iterate over each class
+    for i in range(classes):
+        try:
+            gt = np.equal(truth, i)
+            pd = np.equal(pred, i)
+            not_gt = np.logical_not(np.equal(truth, i))
+            not_pd = np.logical_not(np.equal(pred, i))
+            # Calculate accuracy
+            acc = (np.logical_and(pd, gt).sum() + \
+                   np.logical_and(not_pd, not_gt).sum()) /  gt.size
+            acc_scores.append(acc)
+        except ZeroDivisionError:
+            acc_scores.append(0.0)
+    # Return computed accuracy scores
+    return acc_scores
+
 #-----------------------------------------------------#
 #                      Plotting                       #
 #-----------------------------------------------------#
@@ -212,6 +230,9 @@ for index in tqdm(sample_list):
                    ignore_index=True)
     spec = calc_Specificity(truth, pred, classes=4)
     df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
+                   ignore_index=True)
+    acc = calc_Accuracy(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "Acc"] + acc, index=cols),
                    ignore_index=True)
     # Compute Visualization
     visualize_evaluation(index, image, truth, pred, "evaluation/visualization")

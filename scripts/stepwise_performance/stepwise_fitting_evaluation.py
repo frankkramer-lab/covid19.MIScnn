@@ -47,16 +47,15 @@ res_dt = pd.melt(dt_raw,
                              "val_loss", "val_tversky_loss", "val_dice_soft", "val_dice_crossentropy"],
                  var_name="metric", value_name="value")
 
-# Renaming stuff
-res_dt.replace({"nDnP": "Data Augmentation: Excluded & Preprocessing: Excluded",
-                "nDwP": "Data Augmentation: Excluded & Preprocessing: Included",
-                "wDwP": "Data Augmentation: Included & Preprocessing: Included"},
-                inplace=True)
-
 # Metric selection - loss
 loss_dt = res_dt[(res_dt["metric"]=="loss") | (res_dt["metric"]=="val_loss")]
+# Renaming stuff
+loss_dt.replace({"nDnP": "Data Augmentation: Excluded & Preprocessing: Excluded",
+                 "nDwP": "Data Augmentation: Excluded & Preprocessing: Included",
+                 "wDwP": "Data Augmentation: Included & Preprocessing: Included"},
+                inplace=True)
 
-# Plot fitting curve
+# Plot fitting curve - v1
 fig = (ggplot(loss_dt, aes("epoch", "value", color="metric", group="metric"))
               + geom_smooth(method="gpr", size=1)
               + facet_wrap("method", ncol=1)
@@ -69,3 +68,22 @@ fig = (ggplot(loss_dt, aes("epoch", "value", color="metric", group="metric"))
               + theme_bw(base_size=28))
 fig.save(filename="spe.fitting_curve.png", path="evaluation",
          width=20, height=16, dpi=200)
+
+# Plot fitting curve - v2
+loss_dt = res_dt[(res_dt["metric"]=="loss") | (res_dt["metric"]=="val_loss")]
+loss_dt.replace({"nDnP": "Data Aug: Off & PreProc: Off",
+                 "nDwP": "Data Aug: Off & PreProc: On",
+                 "wDwP": "Data Aug: On & PreProc: On"},
+                inplace=True)
+fig = (ggplot(loss_dt, aes("epoch", "value", color="metric", group="metric"))
+              + geom_smooth(method="gpr", size=1)
+              + facet_wrap("method", ncol=2, nrow=2)
+              + scale_y_continuous(limits=[0, 5])
+              + ggtitle("Stepwise Fitting Curve Evaluation")
+              + xlab("Number of Epochs")
+              + ylab("Loss Function")
+              + scale_colour_discrete(name="Dataset",
+                                      labels=["Training", "Validation"])
+              + theme_bw(base_size=28))
+fig.save(filename="spe.fitting_curve.alternative.png", path="evaluation",
+         width=16, height=12, dpi=200)

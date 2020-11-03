@@ -16,4 +16,67 @@ python3 scripts/stepwise_performance/run_miscnn.noDA_noPreProc.py --fold 1
 python3 scripts/stepwise_performance/run_miscnn.noDA_noPreProc.py --fold 2
 python3 scripts/stepwise_performance/run_miscnn.noDA_noPreProc.py --fold 3
 python3 scripts/stepwise_performance/run_miscnn.noDA_noPreProc.py --fold 4
+
+python3 scripts/run_evaluation.py
 ```
+
+Rename the resulting evaluation directory.
+
+```sh
+mv evaluation/ evaluation.stepwise.noDA_noPP/
+```
+
+### Pipeline Run without Data Augmentation and with Preprocessing
+
+Run the following commands:
+
+```sh
+python3 scripts/stepwise_performance/run_miscnn.noDA.py --fold 0
+python3 scripts/stepwise_performance/run_miscnn.noDA.py --fold 1
+python3 scripts/stepwise_performance/run_miscnn.noDA.py --fold 2
+python3 scripts/stepwise_performance/run_miscnn.noDA.py --fold 3
+python3 scripts/stepwise_performance/run_miscnn.noDA.py --fold 4
+
+python3 scripts/run_evaluation.py
+```
+
+Rename the resulting evaluation directory.
+
+```sh
+mv evaluation/ evaluation.stepwise.noDA/
+```
+
+### Pipeline Run with Data Augmentation and without Preprocessing
+
+Run the following commands:
+
+```sh
+python3 scripts/stepwise_performance/run_miscnn.noPreProc.py --fold 0
+python3 scripts/stepwise_performance/run_miscnn.noPreProc.py --fold 1
+python3 scripts/stepwise_performance/run_miscnn.noPreProc.py --fold 2
+python3 scripts/stepwise_performance/run_miscnn.noPreProc.py --fold 3
+python3 scripts/stepwise_performance/run_miscnn.noPreProc.py --fold 4
+
+python3 scripts/run_evaluation.py
+```
+
+Rename the resulting evaluation directory.
+
+```sh
+mv evaluation/ evaluation.stepwise.noPP/
+```
+
+### Evaluation
+
+For running the stepwise performance evaluation, you have to modify the hardcoded pathes inside the following files:
+- 'stepwise_fitting_evaluation.py'
+- 'stepwise_performance_evaluation.py'
+
+Afterwards, run the following commands:
+
+```sh
+Rscript scripts/stepwise_performance/stepwise_performance_evaluation.R
+python3 scripts/stepwise_performance/stepwise_fitting_evaluation.py
+```
+
+### Results

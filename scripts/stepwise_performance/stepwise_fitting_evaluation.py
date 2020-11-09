@@ -25,12 +25,13 @@ from plotnine import *
 path_all = "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation/"
 path_noDAnoPP = "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise.noDA_noPP/"
 path_noDA = "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise.noDA/"
+path_noPP = "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise.noPP/"
 
 # Build dataset from logging data
-method = ["wDwP", "nDwP", "nDnP"]
-pathes = [path_all, path_noDA, path_noDAnoPP]
+method = ["wDwP", "wDnP", "nDwP", "nDnP"]
+pathes = [path_all, path_noPP, path_noDA, path_noDAnoPP]
 dt_raw = pd.DataFrame()
-for i in range(0, 3):
+for i in range(0, 4):
     dt_tmp = pd.DataFrame()
     for fold in ["fold_0", "fold_1", "fold_2", "fold_3", "fold_4"]:
         path_log = os.path.join(pathes[i], fold, "history.tsv")
@@ -51,12 +52,13 @@ res_dt = pd.melt(dt_raw,
 loss_dt = res_dt[(res_dt["metric"]=="loss") | (res_dt["metric"]=="val_loss")]
 # Renaming stuff
 loss_dt.replace({"nDnP": "Data Augmentation: Excluded & Preprocessing: Excluded",
+                 "wDnP": "Data Augmentation: Included & Preprocessing: Excluded",
                  "nDwP": "Data Augmentation: Excluded & Preprocessing: Included",
                  "wDwP": "Data Augmentation: Included & Preprocessing: Included"},
                 inplace=True)
 
 # Plot fitting curve - v1
-fig = (ggplot(loss_dt, aes("epoch", "value", color="metric", group="metric"))
+fig = (ggplot(loss_dt, aes("epoch", "value", color="factor(metric)"))
               + geom_smooth(method="gpr", size=1)
               + facet_wrap("method", ncol=1)
               + scale_y_continuous(limits=[0, 5])
@@ -72,10 +74,11 @@ fig.save(filename="spe.fitting_curve.png", path="evaluation",
 # Plot fitting curve - v2
 loss_dt = res_dt[(res_dt["metric"]=="loss") | (res_dt["metric"]=="val_loss")]
 loss_dt.replace({"nDnP": "Data Aug: Off & PreProc: Off",
+                 "wDnP": "Data Aug: On & PreProc: Off",
                  "nDwP": "Data Aug: Off & PreProc: On",
                  "wDwP": "Data Aug: On & PreProc: On"},
                 inplace=True)
-fig = (ggplot(loss_dt, aes("epoch", "value", color="metric", group="metric"))
+fig = (ggplot(loss_dt, aes("epoch", "value", color="factor(metric)"))
               + geom_smooth(method="gpr", size=1)
               + facet_wrap("method", ncol=2, nrow=2)
               + scale_y_continuous(limits=[0, 5])

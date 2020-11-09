@@ -25,6 +25,7 @@ library("magrittr")
 path_all <- "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation/"
 path_noDAnoPP <- "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise.noDA_noPP/"
 path_noDA <- "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise.noDA/"
+path_noPP <- "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise.noPP/"
 
 ###################################################################################################################
 # Performance Analysis #
@@ -34,15 +35,16 @@ path_noDA <- "/home/mudomini/projects/covid19.MIScnn.RESULTS/evaluation.stepwise
 res_wDwP <- fread(file.path(path_all, "cv_results.detailed.csv"), sep=",", header=TRUE)
 res_nDnP <- fread(file.path(path_noDAnoPP, "cv_results.detailed.csv"), sep=",", header=TRUE)
 res_nDwP <- fread(file.path(path_noDA, "cv_results.detailed.csv"), sep=",", header=TRUE)
+res_wDnP <- fread(file.path(path_noPP, "cv_results.detailed.csv"), sep=",", header=TRUE)
 
 # Add mapping column
 res_wDwP[, method := "wDwP"]
 res_nDnP[, method := "nDnP"]
 res_nDwP[, method := "nDwP"]
-#res_wDnP[, method := "wDnP"]
+res_wDnP[, method := "wDnP"]
 
 # Combine tables
-res <- rbind(res_wDwP, res_nDnP, res_nDwP)
+res <- rbind(res_wDwP, res_nDnP, res_nDwP, res_wDnP)
 
 # Preprocessing
 res[, lungs:=rowMeans(res[,c("lung_R", "lung_L")])]
@@ -54,9 +56,11 @@ res_df <- melt(res,
                variable.factor=TRUE)
 
 # Reorder classes
-res_df[method=="nDnP"]$method <- "Data Augmentation: Excluded & Preprocessing: Excluded"
-res_df[method=="nDwP"]$method <- "Data Augmentation: Excluded & Preprocessing: Included"
-res_df[method=="wDwP"]$method <- "Data Augmentation: Included & Preprocessing: Included"
+res_df$method <- factor(res_df$method , levels=c("nDnP", "wDnP", "nDwP", "wDwP"))
+res_df[method=="nDnP"]$method <- "Data Aug: Excluded & PreProc: Excluded"
+res_df[method=="wDnP"]$method <- "Data Aug: Included & PreProc: Excluded"
+res_df[method=="nDwP"]$method <- "Data Aug: Excluded & PreProc: Included"
+res_df[method=="wDwP"]$method <- "Data Aug: Included & PreProc: Included"
 res_df[score=="Acc"]$score <- "Accuracy"
 res_df[score=="DSC"]$score <- "Dice Similarity Coef."
 res_df[score=="Sens"]$score <- "Sensitivity"

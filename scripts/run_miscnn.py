@@ -86,7 +86,7 @@ pp = Preprocessor(data_io, data_aug=data_aug, batch_size=2, subfunctions=sf,
                   prepare_subfunctions=True, prepare_batches=False,
                   analysis="patchwise-crop", patch_shape=(160, 160, 80))
 # Adjust the patch overlap for predictions
-pp.patchwise_overlap = (80, 80, 40)
+pp.patchwise_overlap = (80, 80, 30)
 
 # Initialize the Architecture
 unet_standard = Architecture(depth=4, activation="softmax",

@@ -80,3 +80,7 @@ python3 scripts/stepwise_performance/stepwise_fitting_evaluation.py
 ```
 
 ### Results
+
+![fitting_curve](https://github.com/frankkramer-lab/covid19.MIScnn/blob/master/docs/spe.fitting_curve.png?raw=true)
+
+![performance_results](https://github.com/frankkramer-lab/covid19.MIScnn/blob/master/docs/spe.boxplot.png?raw=true)

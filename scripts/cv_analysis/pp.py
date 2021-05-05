@@ -40,4 +40,4 @@ for i in range(2,5):
     sample_list.sort()
 
     # Split samples into k (training, validation) folds
-    split_folds(sample_list, k_fold=i)
+    split_folds(sample_list, k_fold=i, evaluation_path="evaluation.cv" + str(i))

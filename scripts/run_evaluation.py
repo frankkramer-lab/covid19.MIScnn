@@ -1,4 +1,4 @@
-#==============================================================================#
+    #==============================================================================#
 #  Author:       Dominik Müller                                                #
 #  Copyright:    2020 IT-Infrastructure for Translational Medical Research,    #
 #                University of Augsburg                                        #
@@ -118,6 +118,21 @@ def calc_DSC(truth, pred, classes):
     # Return computed Dice Similarity Coefficients
     return dice_scores
 
+def calc_IoU(truth, pred, classes):
+    iou_scores = []
+    # Iterate over each class
+    for i in range(classes):
+        try:
+            gt = np.equal(truth, i)
+            pd = np.equal(pred, i)
+            # Calculate iou
+            iou = np.logical_and(pd, gt).sum() / (pd.sum() + gt.sum() - np.logical_and(pd, gt).sum())
+            iou_scores.append(iou)
+        except ZeroDivisionError:
+            iou_scores.append(0.0)
+    # Return computed IoU
+    return iou_scores
+
 def calc_Sensitivity(truth, pred, classes):
     sens_scores = []
     # Iterate over each class
@@ -165,6 +180,21 @@ def calc_Accuracy(truth, pred, classes):
             acc_scores.append(0.0)
     # Return computed accuracy scores
     return acc_scores
+
+def calc_Precision(truth, pred, classes):
+    prec_scores = []
+    # Iterate over each class
+    for i in range(classes):
+        try:
+            gt = np.equal(truth, i)
+            pd = np.equal(pred, i)
+            # Calculate precision
+            prec = np.logical_and(pd, gt).sum() / pd.sum()
+            prec_scores.append(prec)
+        except ZeroDivisionError:
+            prec_scores.append(0.0)
+    # Return computed precision scores
+    return prec_scores
 
 #-----------------------------------------------------#
 #                      Plotting                       #
@@ -225,11 +255,17 @@ for index in tqdm(sample_list):
     dsc = calc_DSC(truth, pred, classes=4)
     df = df.append(pd.Series([index, "DSC"] + dsc, index=cols),
                    ignore_index=True)
+    iou = calc_IoU(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "IoU"] + iou, index=cols),
+                   ignore_index=True)
     sens = calc_Sensitivity(truth, pred, classes=4)
     df = df.append(pd.Series([index, "Sens"] + sens, index=cols),
                    ignore_index=True)
     spec = calc_Specificity(truth, pred, classes=4)
     df = df.append(pd.Series([index, "Spec"] + spec, index=cols),
+                   ignore_index=True)
+    prec = calc_Precision(truth, pred, classes=4)
+    df = df.append(pd.Series([index, "Prec"] + prec, index=cols),
                    ignore_index=True)
     acc = calc_Accuracy(truth, pred, classes=4)
     df = df.append(pd.Series([index, "Acc"] + acc, index=cols),
@@ -262,14 +298,17 @@ for fold in os.listdir("evaluation"):
     val_list = detval.values.tolist()[1:]
     # Obtain metrics for validation list
     df_val = df.loc[df["index"].isin(val_list)]
+    # Print out average and std evaluation metrics for the current fold
+    df_avg = df_val.groupby(by="score").mean()
+    df_std = df_val.groupby(by="score").std()
+    print(fold)
+    print(df_avg)
+    print(df_std)
     # Compute average metrics for validation list
     df_val = df_val.groupby(by="score").median()
     # Combine lung left and lung right class by mean
     df_val["lungs"] = df_val[["lung_L", "lung_R"]].mean(axis=1)
     df_val.drop(["lung_L", "lung_R"], axis=1, inplace=True)
-    # Print out averaged evaluation metrics for the current fold
-    print("Current Fold:", fold)
-    print(df_val)
     # Add df_val df to df_global
     df_val["fold"] = fold
     df_val = df_val.reset_index()

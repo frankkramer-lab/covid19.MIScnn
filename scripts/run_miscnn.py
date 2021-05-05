@@ -29,15 +29,14 @@ from miscnn.neural_network.metrics import tversky_crossentropy, dice_soft, \
 from miscnn.evaluation.cross_validation import cross_validation
 from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, \
                                        EarlyStopping, CSVLogger, ModelCheckpoint
-from miscnn.evaluation.cross_validation import run_fold, load_csv2fold
+from miscnn.evaluation.cross_validation import run_fold, load_disk2fold
 import argparse
 import os
 
 #-----------------------------------------------------#
 #      Tensorflow Configuration for GPU Cluster       #
 #-----------------------------------------------------#
-# physical_devices = tf.config.list_physical_devices('GPU')
-# tf.config.experimental.set_memory_growth(physical_devices[0], True)
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 #-----------------------------------------------------#
 #                      Argparser                      #
@@ -129,8 +128,8 @@ model.dump(os.path.join(fold_subdir, "model.latest.hdf5"))
 model.load(os.path.join(fold_subdir, "model.best.hdf5"))
 
 # Obtain training and validation data set
-training, validation = load_csv2fold(os.path.join(fold_subdir,
-                                                  "sample_list.csv"))
+training, validation = load_disk2fold(os.path.join(fold_subdir,
+                                                   "sample_list.json"))
 
 # Compute predictions
-model.predict(validation, direct_output=False)
+model.predict(validation, return_output=False)

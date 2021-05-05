@@ -25,12 +25,6 @@ from miscnn import Data_IO
 from miscnn.evaluation.cross_validation import split_folds
 
 #-----------------------------------------------------#
-#      Tensorflow Configuration for GPU Cluster       #
-#-----------------------------------------------------#
-# physical_devices = tf.config.list_physical_devices('GPU')
-# tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
-#-----------------------------------------------------#
 #                Running Preprocessing                #
 #-----------------------------------------------------#
 # Initialize Data IO Interface for NIfTI data

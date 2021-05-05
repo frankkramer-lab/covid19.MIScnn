@@ -25,24 +25,19 @@ from miscnn import Data_IO
 from miscnn.evaluation.cross_validation import split_folds
 
 #-----------------------------------------------------#
-#      Tensorflow Configuration for GPU Cluster       #
-#-----------------------------------------------------#
-# physical_devices = tf.config.list_physical_devices('GPU')
-# tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
-#-----------------------------------------------------#
 #                Running Preprocessing                #
 #-----------------------------------------------------#
-# Initialize Data IO Interface for NIfTI data
-## We are using 4 classes due to [background, lung_left, lung_right, covid-19]
-interface = NIFTI_interface(channels=1, classes=4)
+for i in range(2,5):
+    # Initialize Data IO Interface for NIfTI data
+    ## We are using 4 classes due to [background, lung_left, lung_right, covid-19]
+    interface = NIFTI_interface(channels=1, classes=4)
 
-# Create Data IO object to load and write samples in the file structure
-data_io = Data_IO(interface, input_path="data", delete_batchDir=False)
+    # Create Data IO object to load and write samples in the file structure
+    data_io = Data_IO(interface, input_path="data", delete_batchDir=False)
 
-# Access all available samples in our file structure
-sample_list = data_io.get_indiceslist()
-sample_list.sort()
+    # Access all available samples in our file structure
+    sample_list = data_io.get_indiceslist()
+    sample_list.sort()
 
-# Split samples into k (training, validation) folds
-split_folds(sample_list, k_fold=2)
+    # Split samples into k (training, validation) folds
+    split_folds(sample_list, k_fold=i)

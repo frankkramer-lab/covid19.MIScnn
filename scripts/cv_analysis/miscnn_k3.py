@@ -42,8 +42,8 @@ parser.add_argument("-f", "--fold", help="Cross-validation fold. Range: [0:5]",
 parser.add_argument("-g", "--gpu", help="GPU ID selection for multi cluster",
                     required=False, type=int, dest="gpu", default=0)
 
-path_eval = "evaluation.cv2"
-path_preds = "predictions.cv2"
+path_eval = "evaluation.cv3"
+path_preds = "predictions.cv3"
 
 args = parser.parse_args()
 fold = args.fold

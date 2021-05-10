@@ -73,9 +73,11 @@ sf = [sf_clipping, sf_normalize, sf_resample, sf_zscore]
 # Create and configure the Preprocessor class
 pp = Preprocessor(data_io, data_aug=None, batch_size=2, subfunctions=sf,
                   prepare_subfunctions=True, prepare_batches=False,
-                  analysis="patchwise-crop", patch_shape=(160, 160, 80))
+                  analysis="patchwise-crop", patch_shape=(160, 160, 80),
+                  use_multiprocessing=True)
 # Adjust the patch overlap for predictions
 pp.patchwise_overlap = (80, 80, 30)
+pp.mp_threads = 16
 
 # Initialize the Architecture
 unet_standard = Architecture(depth=4, activation="softmax",

@@ -1,6 +1,6 @@
 numpy==1.18.2
 pandas==0.25.3
-tensorflow==2.3.0
+tensorflow==2.5.0
 miscnn==1.1.9
 tqdm==4.35.0
 plotnine==0.6.0

@@ -118,18 +118,26 @@ Bavaria, Germany
 
 ## How to cite / More information
 
-Dominik Müller, Iñaki Soto-Rey and Frank Kramer. (2020)   
-Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net.  
-arXiv e-print: [https://arxiv.org/abs/2007.04774](https://arxiv.org/abs/2007.04774)
+Dominik Müller, Iñaki Soto-Rey and Frank Kramer.  
+Robust chest CT image segmentation of COVID-19 lung infection based on limited data.  
+Informatics in Medicine Unlocked. Volume 25, 2021.  
+DOI: https://doi.org/10.1016/j.imu.2021.100681
 
 ```
-Article{covid19seg,
-  title={Automated Chest CT Image Segmentation of COVID-19 Lung Infection based on 3D U-Net},
-  author={Dominik Müller, Iñaki Soto-Rey and Frank Kramer},
-  year={2020},
-  eprint={2007.04774},
-  archivePrefix={arXiv},
-  primaryClass={eess.IV}
+@article{MULLER2021100681,
+title = {Robust chest CT image segmentation of COVID-19 lung infection based on limited data},
+journal = {Informatics in Medicine Unlocked},
+volume = {25},
+pages = {100681},
+year = {2021},
+issn = {2352-9148},
+doi = {https://doi.org/10.1016/j.imu.2021.100681},
+url = {https://www.sciencedirect.com/science/article/pii/S2352914821001660},
+author = {Dominik Müller and Iñaki Soto-Rey and Frank Kramer},
+keywords = {COVID-19, Segmentation, Limited data, Computed tomography, Deep learning, Artificial intelligence},
+eprint={2007.04774},
+archivePrefix={arXiv},
+primaryClass={eess.IV}
 }
 ```
 
